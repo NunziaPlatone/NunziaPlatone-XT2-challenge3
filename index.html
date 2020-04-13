@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Challenge 2 local</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+		<link rel="stylesheet" type="text/css" href="style/style.css">
+	</head>
+	<body  id="content">
+		<nav class="jumbotron">
+			<figure>
+				<img src="image/spacex.png">
+				<h1>Land zone dashboard</h1>
+				<p>Alle informatie voor u nieuwe landings bestemming op 1 plek</p>
+			</figure>
+		</nav>
+		<section id="dashboardcontent">
+			<article id="weerContainer">
+				<h3>
+					Het weer
+				</h3>
+				<img id="weericon">
+				<p>
+					<span id="weerStatus"></span></br>
+					<span id="graden"></span> graden
+				</p>
+			</article>
+			<article id="mapContainer">
+				<h3>
+					Map overzicht
+				</h3>
+				<div id='map' style='margin:auto;display:block;width: 80%; height: 300px;margin-bottom: 20px;'></div>
+			</article>
+		</section>
+
+	</body>	
+	<script>
+function getLocation() {
+	fetch('https://api.ipdata.co/?api-key=83976c4e6eaa1636992c4db7fa0ff1da9162414e2b1c2a0f21bf46c2')
+		.then((response) => {
+		    return response.json();
+		}).then((apiinfo) => {
+			let lat = apiinfo.latitude;
+			let lon = apiinfo.longitude;
+			setWheatherInfo(lat,lon);
+			loadmap(lat,lon);
+
+
+		});
+  // if (navigator.geolocation) {
+  //   navigator.geolocation.getCurrentPosition(showPosition);
+  // } else {
+  // 	alert('Om deze applicatie te kunnen gebruiken hebben we toegang nodig tot je locatie');
+  // }
+}
+
+// function showPosition(position) {
+// 	console.log(position);
+// 	let lat = position.coords.latitude;
+// 	let lon = position.coords.longitude;
+// 	setWheatherInfo(lat,lon);
+// 	loadmap(lat,lon);
+	
+
+// }
+function setWheatherInfo(lat,lon){
+	let imgElement 		= document.getElementById('weericon');
+	let weerStatus 		= document.getElementById('weerStatus');
+	let gradenStatus 	= document.getElementById('graden');
+	let apikey = '45d8e6f17b6ca8a3a1c7223591847361';
+	let url 	= `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apikey}&&lang=nl&units=metric`;
+	console.log(weerStatus);
+	fetch(url)
+		.then((response) => {
+		    return response.json();
+		}).then((apiinfo) => {
+			console.log(apiinfo);
+			let weerinfo = apiinfo.weather[0];
+			let gradeninfo = apiinfo.main;
+
+		    let imgurl = `https://openweathermap.org/img/wn/${weerinfo.icon}@2x.png`;
+		    imgElement.src = imgurl;
+		    weerStatus.innerHTML = weerinfo.description;
+		    gradenStatus.innerHTML = gradeninfo.temp;
+
+
+		});
+}
+function loadmap(lat,lon){
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYXBpLXRlc3QiLCJhIjoiY2s4b3JmZXdtMDRxbjNkbWFpYjU2ZnV2dCJ9.kdUj5GvhGZYWyuZgUcPzmw';
+	var map = new mapboxgl.Map({
+	container: 'map',
+	center:[lon,lat],
+	zoom:10,
+	style: 'mapbox://styles/mapbox/streets-v11'
+	});
+}
+
+
+getLocation()
+</script>
+</html>
